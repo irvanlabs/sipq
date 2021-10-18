@@ -3,16 +3,9 @@ from dataclasses import dataclass
 
 @dataclass
 class Data:
-    name = 'Jhon Doe'
-    age = 39
-    weight = 52
-
-    def toDict(self):
-        return {
-            'name': self.name,
-            'age': self.age,
-            'weight': self.weight,
-        }
+    name: str = 'Jhon Doe'
+    age: int = 39
+    weight: int = 52
 
 
 async def get_data() -> Data:

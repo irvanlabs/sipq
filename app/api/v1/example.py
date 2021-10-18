@@ -1,9 +1,10 @@
 from fastapi import APIRouter
-from app.core.presenter import example
+from app.core.presenter import example as example_presenter
+from dataclasses import asdict
 
 router = APIRouter()
 
 
 @router.get('/example')
 async def root():
-    return (await example.display_data()).toDict()
+    return asdict(await example_presenter.display_data())
