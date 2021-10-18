@@ -12,3 +12,5 @@ git clone git@github.com:bokunodev/sipq .
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+
+Semua pulll request **HARUS** di format menggunakan [yapf](https://github.com/google/yapf)
