@@ -2,6 +2,7 @@
 Project sistem informasi partai dan quick count
 
 Cara setup enviroment untuk memulai development.
+
 jalankan command - command berikut:
 ```Shell
 mkdir sipq
