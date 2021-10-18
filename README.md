@@ -1,5 +1,5 @@
-# sipq
-Project sistem informasi partai dan quick count
+# SipQ
+Project sistem informasi partai dan quickcount.
 
 Cara setup enviroment untuk memulai development.
 
