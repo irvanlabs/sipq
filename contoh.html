@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>contoh</title>
+	<style type="text/css">
+		html, body {
+			display: block;
+			height: 100vh;
+			width: 100vw;
+		}
+	</style>
+</head>
+<body>
+<fieldset>
+	<legend>Login</legend>
+	<input type="text" name="nik">
+	<br>
+	<input type="text" name="nama">
+	<br>
+	<input type="password" name="sandi">
+	<br>
+	<button>submit</button>
+</fieldset>
+<hr>
+<h2 style="display: block;"></h2>
+<script type="text/javascript">
+async function generate_hash() {
+    const nik   = document.querySelector('input[name=nik]')
+    const nama  = document.querySelector('input[name=nama]')
+    const sandi = document.querySelector('input[name=sandi]')
+
+    const payload = `${nik.value}.${nama.value}.${sandi.value}`
+
+    const arrUint8 = new TextEncoder().encode(payload)
+    const hashBuffer = await crypto.subtle.digest('SHA-512', arrUint8)
+    const hashArray = Array.from(new Uint8Array(hashBuffer))
+    const hashHex = hashArray.map(b => {
+    	let x = b.toString(16).padStart(2, '0')
+    	return x
+    }).join('')
+    return hashHex
+}
+
+document.querySelector('button').onclick = () => {
+	// store the value in cookie or session storage
+	// to prevent retyping password, name and nik repeatly
+	// and prevent storing value in plain text
+	// and use this value to login
+	generate_hash().then(x => console.log(x) )
+}
+</script>
+</body>
+</html>
