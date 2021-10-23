@@ -67,7 +67,7 @@ class DataDiri(BaseModel):
         }
 
 
-class Result:
+class Result(BaseModel):
     nama_lengkap: str
     hash: str
     level: int
