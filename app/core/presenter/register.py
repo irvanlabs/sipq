@@ -1,12 +1,5 @@
-from fastapi import APIRouter
-from app.core.model import register as register_model
-
-router = APIRouter()
+from app.core.model import register as register_m
 
 
-@router.post("/register")
-async def handle_register(user: register_model.User) -> register_model.Result:
-    return register_model.Result(
-        user_id='xxx',
-        signature='yyy',
-    )
+async def handle(data_diri: register_m.DataDiri) -> register_m.Result:
+    return await register_m.insert_new_data_diri(data_diri)

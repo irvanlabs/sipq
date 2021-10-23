@@ -13,3 +13,7 @@ VERSION = os.getenv('VERSION') or 'v0.0.1'
 DEBUG = not not os.getenv('DEBUG')
 SECRET = os.getenv('SECRET') or os.urandom(32)
 API_PREFIX = '/api/v1'
+
+DB_USER = 'user'
+DB_PASS = 'user'
+DB_NAME = 'user'
