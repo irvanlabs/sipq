@@ -10,7 +10,7 @@ from hashlib import sha512
 from app.core import config
 
 
-class Level(Enum):
+class Level(int, Enum):
     administrator: int = 1
     admin_pusat: int = 2
     admin_provinsi: int = 3
@@ -67,10 +67,10 @@ class DataDiri(BaseModel):
         }
 
 
-class Result:
+class Result(BaseModel):
     nama_lengkap: str
     hash: str
-    level: int
+    level: Level
 
     def __init__(self, nama_lengkap: str, hash: str, level: int):
         self.nama_lengkap = nama_lengkap
