@@ -72,22 +72,16 @@ class Result(BaseModel):
     hash: str
     level: Level
 
-    def __init__(self, nama_lengkap: str, hash: str, level: int):
-        self.nama_lengkap = nama_lengkap
-        self.hash = hash
-        self.level = level
-
 
 async def insert_new_data_diri(data_diri: DataDiri) -> Result:
     conn = Connection(
         user=config.DB_USER,
         password=config.DB_PASS,
         database=config.DB_NAME,
-        host='localhost',
+        host=config.DB_HOST,
     )
 
-    data_diri.hash = sha512(
-        (data_diri.nama_lengkap + data_diri.nik).encode()).hexdigest()
+    data_diri.hash = sha512(data_diri.nik.encode()).hexdigest()
 
     insert_query = '''
     INSERT INTO `data_diri` (nik,nama_lengkap,ttl,jenis_kelamin,status_perkawinan,pekerjaan,pendidikan_terakhir,alamat_lengkap,sosial_media,level,hash)
@@ -99,17 +93,13 @@ async def insert_new_data_diri(data_diri: DataDiri) -> Result:
         try:
             with conn.cursor() as cur:
                 cur.execute(query=insert_query, args=data_diri.getDict())
-            conn.commit()
-        except IntegrityError as e:
+        except Exception:
             raise HTTPException(
                 status_code=400,
                 detail='insert error, due to malformed request or wrong data')
             conn.rollback()
-        else:
-            conn.rollback()
+        conn.commit()
 
-    return Result(
-        nama_lengkap=data_diri.nama_lengkap,
-        hash=data_diri.hash,
-        level=Level.anggota,
-    )
+    return Result(nama_lengkap=data_diri.nama_lengkap,
+                  hash=data_diri.hash,
+                  level=Level.anggota)
