@@ -10,7 +10,7 @@ from hashlib import sha512
 from app.core import config
 
 
-class Level(Enum):
+class Level(int, Enum):
     administrator: int = 1
     admin_pusat: int = 2
     admin_provinsi: int = 3
@@ -67,15 +67,10 @@ class DataDiri(BaseModel):
         }
 
 
-class Result:
+class Result(BaseModel):
     nama_lengkap: str
     hash: str
-    level: int
-
-    def __init__(self, nama_lengkap: str, hash: str, level: int):
-        self.nama_lengkap = nama_lengkap
-        self.hash = hash
-        self.level = level
+    level: Level
 
 
 async def insert_new_data_diri(data_diri: DataDiri) -> Result:
@@ -83,11 +78,10 @@ async def insert_new_data_diri(data_diri: DataDiri) -> Result:
         user=config.DB_USER,
         password=config.DB_PASS,
         database=config.DB_NAME,
-        host='localhost',
+        host=config.DB_HOST,
     )
 
-    data_diri.hash = sha512(
-        (data_diri.nama_lengkap + data_diri.nik).encode()).hexdigest()
+    data_diri.hash = sha512(data_diri.nik.encode()).hexdigest()
 
     insert_query = '''
     INSERT INTO `data_diri` (nik,nama_lengkap,ttl,jenis_kelamin,status_perkawinan,pekerjaan,pendidikan_terakhir,alamat_lengkap,sosial_media,level,hash)
@@ -99,17 +93,13 @@ async def insert_new_data_diri(data_diri: DataDiri) -> Result:
         try:
             with conn.cursor() as cur:
                 cur.execute(query=insert_query, args=data_diri.getDict())
-            conn.commit()
-        except IntegrityError as e:
+        except Exception:
             raise HTTPException(
                 status_code=400,
                 detail='insert error, due to malformed request or wrong data')
             conn.rollback()
-        else:
-            conn.rollback()
+        conn.commit()
 
-    return Result(
-        nama_lengkap=data_diri.nama_lengkap,
-        hash=data_diri.hash,
-        level=Level.anggota,
-    )
+    return Result(nama_lengkap=data_diri.nama_lengkap,
+                  hash=data_diri.hash,
+                  level=Level.anggota)
