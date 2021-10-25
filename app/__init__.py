@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.core import config
-from app.api.v1 import register
+from app.api.v1 import register, upgrade_level
 
 
 def init_application() -> FastAPI:
@@ -10,6 +10,8 @@ def init_application() -> FastAPI:
 
     # application.include_router(example.router, prefix='/api/v1')
     application.include_router(router=register.router,
+                               prefix=config.API_PREFIX)
+    application.include_router(router=upgrade_level.router,
                                prefix=config.API_PREFIX)
     return application
 
