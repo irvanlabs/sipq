@@ -74,13 +74,6 @@ class Result(BaseModel):
 
 
 async def insert_new_data_diri(data_diri: DataDiri) -> Result:
-    conn = Connection(
-        user=config.DB_USER,
-        password=config.DB_PASS,
-        database=config.DB_NAME,
-        host=config.DB_HOST,
-    )
-
     data_diri.hash = sha512(data_diri.nik.encode()).hexdigest()
 
     insert_query = '''
@@ -88,16 +81,23 @@ async def insert_new_data_diri(data_diri: DataDiri) -> Result:
     VALUES (%(nik)s,%(nama_lengkap)s,%(ttl)s,%(jenis_kelamin)s,%(status_perkawinan)s,%(pekerjaan)s,%(pendidikan_terakhir)s,%(alamat_lengkap)s,%(sosial_media)s,7,%(hash)s)
     '''
 
+    conn = Connection(
+        user=config.DB_USER,
+        password=config.DB_PASS,
+        database=config.DB_NAME,
+        host=config.DB_HOST,
+    )
+
     with conn:
         conn.begin()
         try:
             with conn.cursor() as cur:
                 cur.execute(query=insert_query, args=data_diri.getDict())
-        except Exception:
+        except:
+            conn.rollback()
             raise HTTPException(
                 status_code=400,
                 detail='insert error, due to malformed request or wrong data')
-            conn.rollback()
         conn.commit()
 
     return Result(nama_lengkap=data_diri.nama_lengkap,
