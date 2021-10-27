@@ -6,7 +6,7 @@ edit file /etc/locale.gen dan uncomment
 bagian id_ID.UTF-8. lalu jalankan command
 ~$ sudo locale-gen
 '''
-locale.setlocale(locale.LC_ALL, 'id_ID.UTF-8')
+# locale.setlocale(locale.LC_ALL, 'id_ID.UTF-8')
 
 APP_NAME = os.getenv('APP_NAME') or 'SipQ'
 VERSION = os.getenv('VERSION') or 'v0.0.1'

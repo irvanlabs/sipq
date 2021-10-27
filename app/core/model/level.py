@@ -30,7 +30,7 @@ class Result(BaseModel):
 
 
 
-async def update_level(user_id: str, level_now: Level, target_level: Level) -> Result:
+async def update_level(user_id: str, user_id_target: str, target_level: Level, mode = None) -> Result:
     conn = Connection(
         user=config.DB_USER,
         password=config.DB_PASS,
@@ -40,12 +40,17 @@ async def update_level(user_id: str, level_now: Level, target_level: Level) -> R
 
     # data_diri.hash = sha512(
     #     (data_diri.nama_lengkap + data_diri.nik).encode()).hexdigest()
+    if mode == 'upgrade':
+        update_query = '''
 
-    update_query = '''
-    -- INSERT INTO `data_diri` (nik,nama_lengkap,ttl,jenis_kelamin,status_perkawinan,pekerjaan,pendidikan_terakhir,alamat_lengkap,sosial_media,level,hash)
-    -- VALUES (%(nik)s,%(nama_lengkap)s,%(ttl)s,%(jenis_kelamin)s,%(status_perkawinan)s,%(pekerjaan)s,%(pendidikan_terakhir)s,%(alamat_lengkap)s,%(sosial_media)s,7,%(hash)s)
-    '''
+        '''
+    elif mode == 'downgrade':
+        update_query = '''
 
+        '''
+    else:
+        return "mode is not acceptable"
+        
     with conn:
         conn.begin()
         try:
