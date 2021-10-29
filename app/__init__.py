@@ -12,8 +12,7 @@ def init_application() -> FastAPI:
     application.include_router(router=register.router,
                                prefix=config.API_PREFIX)
 
-    application.include_router(router=berita.router,
-                               prefix=config.API_PREFIX)
+    application.include_router(router=berita.router, prefix=config.API_PREFIX)
     return application
 
 

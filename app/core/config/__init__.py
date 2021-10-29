@@ -1,4 +1,5 @@
-import os, locale
+import os
+import locale
 '''
 set bahasa ke indonesia id linux
 edit file /etc/locale.gen dan uncomment
