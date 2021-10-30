@@ -3,9 +3,7 @@ from fastapi import HTTPException
 from typing import NamedTuple
 from enum import Enum
 from calendar import month_name
-from datetime import datetime
 from pymysql.connections import Connection
-from pymysql.err import IntegrityError
 from hashlib import sha512
 from app.core import config
 
@@ -36,7 +34,6 @@ class Ttl(NamedTuple):
 
 
 class DataDiri(BaseModel):
-    __id: int
     nik: str
     nama_lengkap: str
     ttl: Ttl
@@ -45,26 +42,10 @@ class DataDiri(BaseModel):
     pekerjaan: str
     pendidikan_terakhir: str
     alamat_lengkap: str
-    sosial_media: str
-    __date_created: datetime
-    __date_updated: datetime
-    __level: Level
+    email: str
+    notelp: str
     hash: str
-
-    def getDict(self):
-        return {
-            'nik': self.nik,
-            'nama_lengkap': self.nama_lengkap,
-            'ttl': str(self.ttl),
-            'jenis_kelamin': self.jenis_kelamin,
-            'status_perkawinan': self.status_perkawinan,
-            'pekerjaan': self.pekerjaan,
-            'pendidikan_terakhir': self.pendidikan_terakhir,
-            'alamat_lengkap': self.alamat_lengkap,
-            'sosial_media': self.sosial_media,
-            'hash': self.hash,
-            'level': Level.anggota
-        }
+    level: Level = Level.anggota
 
 
 class Result(BaseModel):
@@ -74,6 +55,15 @@ class Result(BaseModel):
 
 
 async def insert_new_data_diri(data_diri: DataDiri) -> Result:
+    data_diri.hash = sha512(data_diri.nik.encode()).hexdigest()
+    # overwrite level
+    data_diri.level = Level.anggota
+
+    query = '''
+    INSERT INTO `data_diri` (nik,nama_lengkap,ttl,jenis_kelamin,status_perkawinan,pekerjaan,pendidikan_terakhir,alamat_lengkap,email,notelp,hash,level)
+    VALUES (%(nik)s,%(nama_lengkap)s,%(ttl)s,%(jenis_kelamin)s,%(status_perkawinan)s,%(pekerjaan)s,%(pendidikan_terakhir)s,%(alamat_lengkap)s,%(email)s,%(notelp)s,%(hash)s,%(level)s)
+    '''
+
     conn = Connection(
         user=config.DB_USER,
         password=config.DB_PASS,
@@ -81,25 +71,19 @@ async def insert_new_data_diri(data_diri: DataDiri) -> Result:
         host=config.DB_HOST,
     )
 
-    data_diri.hash = sha512(data_diri.nik.encode()).hexdigest()
-
-    insert_query = '''
-    INSERT INTO `data_diri` (nik,nama_lengkap,ttl,jenis_kelamin,status_perkawinan,pekerjaan,pendidikan_terakhir,alamat_lengkap,sosial_media,level,hash)
-    VALUES (%(nik)s,%(nama_lengkap)s,%(ttl)s,%(jenis_kelamin)s,%(status_perkawinan)s,%(pekerjaan)s,%(pendidikan_terakhir)s,%(alamat_lengkap)s,%(sosial_media)s,7,%(hash)s)
-    '''
-
     with conn:
         conn.begin()
         try:
             with conn.cursor() as cur:
-                cur.execute(query=insert_query, args=data_diri.getDict())
-        except Exception:
-            raise HTTPException(
-                status_code=400,
-                detail='insert error, due to malformed request or wrong data')
+                args = data_diri.dict()
+                args['level'] = args['level'].value
+                print(cur.mogrify(query=query, args=args))
+                cur.execute(query=query, args=args)
+        except Exception as e:
             conn.rollback()
+            raise HTTPException(status_code=400, detail=str(e))
         conn.commit()
 
     return Result(nama_lengkap=data_diri.nama_lengkap,
                   hash=data_diri.hash,
-                  level=Level.anggota)
+                  level=data_diri.level)
