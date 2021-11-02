@@ -18,10 +18,10 @@ async def list_level():
 
     return list_levels
 
-@router.post('/level/upgrade', response_model=level_mod.Result,)
-async def upgrade_level(user_id: str, user_id_target: str, target_level: level_mod.Level, mode = 'upgrade') -> level_mod.Result:
-    return await level_pres.handle(user_id, user_id_target, target_level, mode)
+@router.post('/level/upgrade')
+async def upgrade_level(upgrade: level_mod.UpgradeLevel):
+    return await level_pres.handle(upgrade.user_id, upgrade.user_id_target, upgrade.target_level, mode='upgrade')
 
-@router.post('/level/downgrade', response_model=level_mod.Result, )
-async def downgrade_level(user_id: str, user_id_target: str, target_level: level_mod.Level, mode = 'downgrade') -> level_mod.Result:
+@router.post('/level/downgrade',)
+async def downgrade_level(user_id: int, user_id_target: int, target_level: level_mod.Level, mode = 'downgrade') -> level_mod.Result:
     return await level_pres.handle(user_id, user_id_target, target_level, mode)

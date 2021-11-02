@@ -15,17 +15,13 @@ DEBUG = not not os.getenv('DEBUG')
 SECRET = os.getenv('SECRET') or os.urandom(32)
 API_PREFIX = '/api/v1'
 
-DB_USER = os.getenv('DB_USER') or 'beb3a2595aa485'
-DB_PASS = os.getenv('DB_PASS') or '3396d128'
-DB_HOST = os.getenv('DB_HOST') or 'us-cdbr-east-04.cleardb.com'
-DB_NAME = os.getenv('DB_NAME') or 'heroku_8fdf79d25619504'
+# DB_USER = os.getenv('DB_USER') or 'beb3a2595aa485'
+# DB_PASS = os.getenv('DB_PASS') or '3396d128'
+# DB_HOST = os.getenv('DB_HOST') or 'us-cdbr-east-04.cleardb.com'
+# DB_NAME = os.getenv('DB_NAME') or 'heroku_8fdf79d25619504'
 
 MAX_DB_POOL_SIZE = 10
 
-# DB_USER = os.getenv('DB_USER') or 'user'
-# DB_PASS = os.getenv('DB_PASS') or 'user'
-# DB_HOST = os.getenv('DB_HOST') or 'localhost'
-# DB_NAME = os.getenv('DB_NAME') or 'user'
 
 
 def get_db_config(online: bool = False):

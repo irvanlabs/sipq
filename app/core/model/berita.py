@@ -5,7 +5,7 @@ from typing import Optional, List
 from pymysql import Connection, cursors
 from app.core import config
 import logging
-from app import lib
+# from app import lib
 
 
 class BeritaStatus(int, Enum):
